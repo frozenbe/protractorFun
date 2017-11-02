@@ -78,11 +78,6 @@ var TrialsPage = function() {
             browser.sleep(3000);
         }
     };
-
-    this.pageLoaded = this.and(
-        this.inDom($('.offer-box'))
-    );
-
 };
 TrialsPage.prototype = basePage;
 module.exports = new TrialsPage();
