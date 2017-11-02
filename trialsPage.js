@@ -18,10 +18,14 @@ var TrialsPage = function() {
     // Page object methods
 
     this.signIn = function(userObj) {
-        this.email.sendKeys(userObj.email);
-        this.password.sendKeys(userObj.password);
-        basePage.focusAndClick(this.logIn);
-        browser.sleep(3000);
+
+        if (userObj.friendUrl == 'https://www.facebook.com/anna.gl.948/friends_current_city') {
+            this.email.sendKeys(userObj.email);
+            this.password.sendKeys(userObj.password);
+            basePage.focusAndClick(this.logIn);
+            browser.sleep(3000);
+        }
+
         browser.get(userObj.friendUrl);
         browser.sleep(3000);
     };
@@ -47,9 +51,10 @@ var TrialsPage = function() {
     };
 
     this.messageFriends = function(listOfFemaleFriendsUrl,userObj) {
-        var conversationStarted = false;
+
 
         for (i = 0; i < listOfFemaleFriendsUrl.length; i++) {
+            var conversationStarted = false;
             console.log("Navigating to: " + listOfFemaleFriendsUrl[i]);
             browser.get("" + listOfFemaleFriendsUrl[i]);
             browser.sleep(3000);
@@ -59,13 +64,17 @@ var TrialsPage = function() {
                 console.log("changeColorOption.length: " + result);
                 conversationStarted = result > 0 ? true : false;
                 console.log("Conversation has been initiated with female? " + conversationStarted);
-
+                if (conversationStarted == false) {
+                    msgInputField.sendKeys(userObj.message);
+                    browser.actions().sendKeys(protractor.Key.ENTER).perform();
+                    browser.sleep(3000);
+                    msgInputField.sendKeys(userObj.giphy);
+                    browser.sleep(3000);
+                    browser.actions().sendKeys(protractor.Key.ENTER).perform();
+                }
             });
 
-            if (conversationStarted == false) {
-                msgInputField.sendKeys(userObj.message);
-                browser.actions().sendKeys(protractor.Key.ENTER).perform();
-            }
+
             browser.sleep(3000);
         }
     };
