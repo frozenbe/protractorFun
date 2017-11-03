@@ -6,6 +6,7 @@ var TrialsPage = function() {
     // Page elements
 
     this.friendsListLocator = by.xpath("//a[contains(@href,'friends_tab')]");
+    var friendNameLocator = by.xpath("//div[contains(text(),'mutual')]/preceding-sibling::div");
     var email = element(by.xpath("//input[@name='email']"));
     var password = element(by.xpath("//input[@name='pass']"));
     var logIn = element(by.xpath("//input[@value='Log In']"));
@@ -56,7 +57,7 @@ var TrialsPage = function() {
 
         for (i = 0; i < listOfFemaleFriends.length; i++) {
             var conversationStarted = false;
-            console.log("Navigating to: " + listOfFemaleFriends[i].url);
+            console.log("Navigating to: " + listOfFemaleFriends[i].url + " \n" + listOfFemaleFriends[i].name);
             browser.get("" + listOfFemaleFriends[i].url);
             browser.sleep(3000);
             basePage.focusAndClick(msgInputField);
@@ -66,16 +67,20 @@ var TrialsPage = function() {
                 conversationStarted = result > 0 ? true : false;
                 console.log("Conversation has been initiated with female? " + conversationStarted);
                 if (conversationStarted == false) {
-                    msgInputField.sendKeys("Hi " + listOfFemaleFriends[i].name);
-                    browser.sleep(3000);
-                    browser.actions().sendKeys(protractor.Key.ENTER).perform();
-                    msgInputField.sendKeys(userObj.giphy);
-                    browser.sleep(3000);
-                    browser.actions().sendKeys(protractor.Key.ENTER).perform();
-                    browser.sleep(3000);
-                    msgInputField.sendKeys(userObj.message);
-                    browser.actions().sendKeys(protractor.Key.ENTER).perform();
-                    browser.sleep(3000);
+                    element(friendNameLocator).getText().then(function(name){
+                        var firstMessage = "Hi " + name;
+                        msgInputField.sendKeys(firstMessage);
+                        browser.sleep(3000);
+                        browser.actions().sendKeys(protractor.Key.ENTER).perform();
+                        msgInputField.sendKeys(userObj.giphy);
+                        browser.sleep(3000);
+                        browser.actions().sendKeys(protractor.Key.ENTER).perform();
+                        browser.sleep(3000);
+                        msgInputField.sendKeys(userObj.message);
+                        browser.actions().sendKeys(protractor.Key.ENTER).perform();
+                        browser.sleep(3000);
+                    });
+
                 }
             });
             browser.sleep(3000);
