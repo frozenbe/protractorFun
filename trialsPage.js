@@ -5,58 +5,59 @@ var TrialsPage = function() {
 
     // Page elements
 
-    this.friendsList = element.all(by.xpath("//a[contains(@href,'friends_tab')]"));
-    this.email = element(by.xpath("//input[@name='email']"));
-    this.password = element(by.xpath("//input[@name='pass']"));
-    this.logIn = element(by.xpath("//input[@value='Log In']"));
-    var sendMsgBtn = element.all(by.xpath("//a[contains(@ajaxify,'messaging/composer')]"));
+    this.friendsListLocator = by.xpath("//a[contains(@href,'friends_tab')]");
+    var email = element(by.xpath("//input[@name='email']"));
+    var password = element(by.xpath("//input[@name='pass']"));
+    var logIn = element(by.xpath("//input[@value='Log In']"));
+    var sendMsgBtnLocator = by.xpath("//a[contains(@ajaxify,'messaging/composer')]");
     var msgInputField = element(by.xpath("//div[@role='combobox']"));
-    var listOfFemaleFriendsUrl = [];
-    this.listOfFemaleFriendsUrl = [];
+    var listOfFemaleFriends = [];
+    this.listOfFemaleFriends = [];
     var changeColorOption = element.all(by.xpath("//div[text()='Change Color']"));
 
     // Page object methods
 
     this.signIn = function(userObj) {
 
-        if (userObj.friendUrl == 'https://www.facebook.com/anna.gl.948/friends_current_city') {
-            this.email.sendKeys(userObj.email);
-            this.password.sendKeys(userObj.password);
-            basePage.focusAndClick(this.logIn);
-            browser.sleep(3000);
-        }
-
-        browser.get(userObj.friendUrl);
+        email.isPresent().then(function(present) {
+            if (present) {
+                email.sendKeys(userObj.email);
+                password.sendKeys(userObj.password);
+                basePage.focusAndClick(logIn);
+                browser.sleep(3000);
+            }
+        });
+        browser.get(userObj.friendUrl + "friends_current_city");
         browser.sleep(3000);
     };
 
     this.hoverOverFriend = function(friend,userObj) {
 
-        browser.actions().mouseMove(friend).perform();
-        browser.sleep(3000);
+            friend.getText().then(function(result){
+                g = "" + gender.detect(result);
+                if (g == 'female') {
+                    console.log("♀ Female detected! Its name is: " + result);
+                    friend.getAttribute("href").then(function (url) {
+                        if (url.indexOf("?fref") > 0) {
+                            urlMessaging = "https://www.facebook.com/messages/t/" + url.substring(url.indexOf("facebook.com/")+"facebook.com/".length,url.indexOf("?fref"));
+                            console.log("Pushing its url for messaging purposes... " + urlMessaging);
+                            var femaleFriend = {url: urlMessaging, name: result};
+                            listOfFemaleFriends.push(femaleFriend);
+                            console.log("listOfFemaleFriends.length: " + listOfFemaleFriends.length);
+                        }
+                    });
+                }
+            });
 
-        friend.getText().then(function(result){
-            g = "" + gender.detect(result);
-            if (g == 'female') {
-                console.log("♀ Female detected! Its name is: " + result);
-                sendMsgBtn.get(2).getAttribute("href").then(function (url) {
-                    console.log("Pushing its url for messaging purposes... " + url);
-                    listOfFemaleFriendsUrl.push(url);
-                    console.log("listOfFemaleFriendsUrl.length: " + listOfFemaleFriendsUrl.length);
-                });
-            }
-        });
-
-        this.listOfFemaleFriendsUrl = listOfFemaleFriendsUrl;
+            this.listOfFemaleFriends = listOfFemaleFriends;
     };
 
-    this.messageFriends = function(listOfFemaleFriendsUrl,userObj) {
+    this.messageFriends = function(listOfFemaleFriends,userObj) {
 
-
-        for (i = 0; i < listOfFemaleFriendsUrl.length; i++) {
+        for (i = 0; i < listOfFemaleFriends.length; i++) {
             var conversationStarted = false;
-            console.log("Navigating to: " + listOfFemaleFriendsUrl[i]);
-            browser.get("" + listOfFemaleFriendsUrl[i]);
+            console.log("Navigating to: " + listOfFemaleFriends[i].url);
+            browser.get("" + listOfFemaleFriends[i].url);
             browser.sleep(3000);
             basePage.focusAndClick(msgInputField);
 
@@ -65,16 +66,18 @@ var TrialsPage = function() {
                 conversationStarted = result > 0 ? true : false;
                 console.log("Conversation has been initiated with female? " + conversationStarted);
                 if (conversationStarted == false) {
-                    msgInputField.sendKeys(userObj.message);
-                    browser.actions().sendKeys(protractor.Key.ENTER).perform();
+                    msgInputField.sendKeys("Hi " + listOfFemaleFriends[i].name);
                     browser.sleep(3000);
+                    browser.actions().sendKeys(protractor.Key.ENTER).perform();
                     msgInputField.sendKeys(userObj.giphy);
                     browser.sleep(3000);
                     browser.actions().sendKeys(protractor.Key.ENTER).perform();
+                    browser.sleep(3000);
+                    msgInputField.sendKeys(userObj.message);
+                    browser.actions().sendKeys(protractor.Key.ENTER).perform();
+                    browser.sleep(3000);
                 }
             });
-
-
             browser.sleep(3000);
         }
     };
