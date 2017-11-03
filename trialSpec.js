@@ -11,20 +11,42 @@ using(trialsData.TC905, function (data) {
                 browser.ignoreSynchronization = true;
                 browser.get('https://www.facebook.com');
                 trialsPage.signIn(data.clientinfo[0]);
+
             });
     
             it('should collect urls of friends to message', function() {
-                for (var i = 0; i < 32; ++i) {
-                    trialsPage.hoverOverFriend(trialsPage.friendsList.get(i),data.clientinfo[0]);
-//                    window.scrollBy(0, 100);
+                var friendsList = [];
+
+                for (var i = 0; i < 5; ++i) {
+                    console.log("performing scrolldown...");
+                    browser.executeScript('window.scrollBy(0,9999);');
+                    browser.sleep(5000);
+
                 }
+
+                friendsList = element.all(trialsPage.friendsListLocator);
+
+                var friendsListCnt = 0;
+
+                friendsListCnt = friendsList.count().then(function(count){
+                        friendsListCnt = count;
+                        return count;
+                });
+                expect(friendsListCnt).toBeGreaterThan(0);
+
+                friendsListCnt.then(function(cntResolved){
+                    console.log("friendsListCnt " + friendsListCnt);
+                    for (var i = 0; i < friendsListCnt; ++i) {
+                        trialsPage.hoverOverFriend(friendsList.get(i),data.clientinfo[0]);
+                    }
+                });
 
             });
 
             it('should send messages to friends', function() {
 
-                console.log("trialsPage.listOfFemaleFriendsUrl.length: " + trialsPage.listOfFemaleFriendsUrl.length);
-                trialsPage.messageFriends(trialsPage.listOfFemaleFriendsUrl,data.clientinfo[0]);
+                console.log("trialsPage.listOfFemaleFriends.length: " + trialsPage.listOfFemaleFriends.length);
+                trialsPage.messageFriends(trialsPage.listOfFemaleFriends,data.clientinfo[0]);
             });
     
 
