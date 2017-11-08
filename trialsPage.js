@@ -73,7 +73,7 @@ var TrialsPage = function() {
 
         for (i = 0; i < listOfFemaleFriends.length; i++) {
 
-        fs.appendFile("C:\\Users\\324109388\\Desktop\\Workspace\\rbc-drive-qa-protractor\\tmp\\test.txt", listOfFemaleFriends[i].name, function (err) {
+        fs.appendFile("C:\\Users\\324109388\\Desktop\\Workspace\\rbc-drive-qa-protractor\\tmp\\test.txt", "\n"+listOfFemaleFriends[i].name, function (err) {
           if (err) {
             // append failed
             console.log("append failed: " + err);
@@ -95,26 +95,31 @@ var TrialsPage = function() {
                 conversationStarted = result > 0 ? true : false;
                 console.log("Conversation has been initiated with female? " + conversationStarted);
                 if (conversationStarted == false) {
-                    element(friendNameLocator).getText().then(function(name){
-                        var firstMessage = "Hi " + name;
-                        msgInputField.sendKeys(firstMessage);
-                        browser.sleep(3000);
-                        browser.actions().sendKeys(protractor.Key.ENTER).perform();
-                        msgInputField.sendKeys(userObj.giphy);
-                        browser.sleep(3000);
-                        browser.actions().sendKeys(protractor.Key.ENTER).perform();
-                        browser.sleep(3000);
-                        msgInputField.sendKeys(userObj.message);
-                        browser.actions().sendKeys(protractor.Key.ENTER).perform();
-                        browser.sleep(3000);
+                    element(friendNameLocator).isPresent().then(function(present){
+                    if (present) {
+                        element(friendNameLocator).getText().then(function(name){
+                            var firstMessage = "Hi " + name;
+                            msgInputField.sendKeys(firstMessage);
+                            browser.sleep(3000);
+                            browser.actions().sendKeys(protractor.Key.ENTER).perform();
+                            msgInputField.sendKeys(userObj.giphy);
+                            browser.sleep(3000);
+                            browser.actions().sendKeys(protractor.Key.ENTER).perform();
+                            browser.sleep(3000);
+                            msgInputField.sendKeys(userObj.message);
+                            browser.actions().sendKeys(protractor.Key.ENTER).perform();
+                            browser.sleep(3000);
+                        });
+                    }
                     });
+
 
                 }
             });
             browser.sleep(3000);
         }
-        listOfFemaleFriends = [];
-        this.listOfFemaleFriends = listOfFemaleFriends;
+//        listOfFemaleFriends = [];
+//        this.listOfFemaleFriends = listOfFemaleFriends;
     };
 };
 TrialsPage.prototype = basePage;
