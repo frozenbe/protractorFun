@@ -70,7 +70,6 @@ var TrialsPage = function() {
 
     this.messageFriends = function(listOfFemaleFriends,userObj) {
 
-
         for (i = 0; i < listOfFemaleFriends.length; i++) {
 
         fs.appendFile("C:\\Users\\324109388\\Desktop\\Workspace\\rbc-drive-qa-protractor\\tmp\\test.txt", "\n"+listOfFemaleFriends[i].name, function (err) {
@@ -98,7 +97,7 @@ var TrialsPage = function() {
                     element(friendNameLocator).isPresent().then(function(present){
                     if (present) {
                         element(friendNameLocator).getText().then(function(name){
-                            var firstMessage = "Hi " + name;
+                            var firstMessage = "Hi " + name.substring(0,name.indexOf(" "));
                             msgInputField.sendKeys(firstMessage);
                             browser.sleep(3000);
                             browser.actions().sendKeys(protractor.Key.ENTER).perform();
