@@ -13,18 +13,20 @@ using(trialsData.TC905, function (data) {
                 trialsPage.signIn(data.clientinfo[0]);
 
             });
-    
+
             it('should collect urls of friends to message', function() {
                 var friendsList = [];
 
-                for (var i = 0; i < 5; ++i) {
+                for (var i = 0; i < 12; ++i) {
                     console.log("performing scrolldown...");
-                    browser.executeScript('window.scrollBy(0,9999);');
+                    browser.executeScript('window.scrollBy(0,27777);');
+                    basePage.focusAndClick(trialsPage.seeMoreLink);
                     browser.sleep(5000);
 
                 }
 
                 friendsList = element.all(trialsPage.friendsListLocator);
+//                friendsList = trialsPage.shuffleFriends(friendsList);
 
                 var friendsListCnt = 0;
 
