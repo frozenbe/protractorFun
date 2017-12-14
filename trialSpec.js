@@ -7,6 +7,9 @@ var fs = require('fs');
 using(trialsData.TC905, function (data) {
     describe('[200211](4707324324){1221311} |trials| demo ', function() {
 
+            var countSentMessages = 0;
+
+
             beforeAll(function() {
 
                 browser.ignoreSynchronization = true;
@@ -21,7 +24,8 @@ using(trialsData.TC905, function (data) {
                 browser.actions().sendKeys(protractor.Key.CONTROL, protractor.Key.END).perform();
                 basePage.focusAndClick(trialsPage.seeMoreLink);
 
-                for (var i = 5; i >= 0; --i) {
+                // Each scroll down adds 15 more results, so the number of scrolls= membersCount/15
+                for (var i = parseInt(data.clientinfo[0].membersCount/15); i >= 0; --i) {
                     console.log("performing scrolldown...");
                     browser.actions().sendKeys(protractor.Key.CONTROL, protractor.Key.END).perform();
                     browser.sleep(3333);
@@ -52,18 +56,22 @@ using(trialsData.TC905, function (data) {
 
             it('should send messages to friends', function() {
                 var targetsArray = fs.readFileSync("C:\\Users\\324109388\\Desktop\\Workspace\\rbc-drive-qa-protractor\\tmp\\" +data.clientinfo[0].textFile).toString().split('\n');
-                for (var i= targetsArray.length - 1; i>=0; --i) {
-                    if ( (!targetsArray[i].includes('facebook')) || targetsArray[i].includes('undefined')) {
+
+                var uniqueTargetsArray = targetsArray.filter(function(elem, index, self) {
+                    return index === self.indexOf(elem);
+                })
+
+                for (var i= uniqueTargetsArray.length - 1; i>=0; --i) {
+                    if ( (!targetsArray[i].includes('facebook')) || targetsArray[i].includes('undefined') || targetsArray[i].length < 10) {
                         targetsArray.splice(i, 1);
                     }
-                    console.log("url: " + targetsArray[i])
+//                    console.log("url: " + targetsArray[i])
                 }
 
 
-                var countSentMessages = 0;
 
-                console.log("trialsPage.listOfFemaleFriends.length: " + trialsPage.listOfFemaleFriends.length);
-                trialsPage.messageFriends(targetsArray,data.clientinfo[0],countSentMessages);
+                console.log("trialsPage.listOfFemaleFriends.length: " + uniqueTargetsArray.length);
+//                trialsPage.messageFriends(uniqueTargetsArray,data.clientinfo[0],countSentMessages);
             });
 
 
